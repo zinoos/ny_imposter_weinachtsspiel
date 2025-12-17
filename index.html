@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0D1321">
+  <meta name="description" content="Imposter - Holiday Edition: Das Party-Spiel für Weihnachten">
+  <title>Imposter – Holiday Edition 🎄</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Schneeflocken Background -->
+  <div id="snowflakes" class="snowflakes" aria-hidden="true"></div>
+
+  <!-- App Container -->
+  <div id="app" class="app-container">
+    
+    <!-- Screen 1: Landing -->
+    <section id="screen-landing" class="screen screen--active">
+      <div class="screen__content">
+        <div class="landing__hero">
+          <span class="landing__icon">⭐</span>
+          <h1 class="landing__title">IMPOSTER</h1>
+          <p class="landing__subtitle">Holiday Edition</p>
+          <p class="landing__tagline">Das Party-Spiel für Weihnachten</p>
+        </div>
+        
+        <button class="btn btn--primary btn--glow" id="btn-start">
+          Spiel starten
+        </button>
+        
+        <div class="landing__how-to">
+          <div class="how-to__item">
+            <span class="how-to__icon">📱</span>
+            <span class="how-to__label">Weitergeben</span>
+          </div>
+          <div class="how-to__item">
+            <span class="how-to__icon">💬</span>
+            <span class="how-to__label">Diskutieren</span>
+          </div>
+          <div class="how-to__item">
+            <span class="how-to__icon">🗳️</span>
+            <span class="how-to__label">Abstimmen</span>
+          </div>
+        </div>
+        
+        <button class="btn btn--text" id="btn-rules">Wie geht's?</button>
+      </div>
+      
+      <footer class="screen__footer">
+        <button class="btn btn--icon" id="btn-sound" aria-label="Sound ein/aus">
+          <span id="sound-icon">🔊</span>
+        </button>
+      </footer>
+    </section>
+
+    <!-- Screen 2: Setup -->
+    <section id="screen-setup" class="screen">
+      <header class="screen__header">
+        <button class="btn btn--icon" id="btn-back-setup" aria-label="Zurück">←</button>
+        <h2 class="screen__title">Einstellungen</h2>
+        <div class="spacer"></div>
+      </header>
+      
+      <div class="screen__content">
+        <div class="card">
+          <div class="card__header">
+            <span class="card__icon">👥</span>
+            <h3 class="card__title">Spieler</h3>
+          </div>
+          <div class="stepper">
+            <button class="stepper__btn" id="players-minus" aria-label="Spieler entfernen">−</button>
+            <span class="stepper__value" id="players-value">6</span>
+            <button class="stepper__btn" id="players-plus" aria-label="Spieler hinzufügen">+</button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card__header">
+            <span class="card__icon">🎭</span>
+            <h3 class="card__title">Impostor</h3>
+          </div>
+          <div class="stepper">
+            <button class="stepper__btn" id="impostor-minus" aria-label="Impostor entfernen">−</button>
+            <span class="stepper__value" id="impostor-value">1</span>
+            <button class="stepper__btn" id="impostor-plus" aria-label="Impostor hinzufügen">+</button>
+          </div>
+          <p class="card__hint" id="impostor-hint">Empfohlen: 1</p>
+        </div>
+        
+        <div class="card">
+          <div class="card__header">
+            <span class="card__icon">📂</span>
+            <h3 class="card__title">Kategorie</h3>
+          </div>
+          <div class="chips">
+            <button class="chip chip--active" data-category="weihnachten">🎄 Weihnachten</button>
+            <button class="chip" data-category="essen">🍕 Essen</button>
+            <button class="chip" data-category="orte">📍 Orte</button>
+            <button class="chip" data-category="alltag">🏠 Alltag</button>
+            <button class="chip" data-category="random">🎲 Zufall</button>
+          </div>
+        </div>
+        
+        <div class="card card--compact">
+          <h3 class="card__title">Optionen</h3>
+          <div class="toggle-row">
+            <span class="toggle-label">Kinderfreundlich</span>
+            <button class="toggle" id="toggle-family" aria-pressed="true">
+              <span class="toggle__knob"></span>
+            </button>
+          </div>
+          <div class="toggle-row">
+            <span class="toggle-label">Motion reduzieren</span>
+            <button class="toggle" id="toggle-motion" aria-pressed="false">
+              <span class="toggle__knob"></span>
+            </button>
+          </div>
+        </div>
+        
+        <button class="btn btn--primary btn--glow" id="btn-play">
+          Los geht's! 🎄
+        </button>
+      </div>
+    </section>
+
+    <!-- Screen 3: Pass Phone -->
+    <section id="screen-pass" class="screen">
+      <div class="screen__content screen__content--center">
+        <div class="pass-card">
+          <span class="pass-card__icon">🎁</span>
+          <p class="pass-card__label">Gib das Handy an:</p>
+          <p class="pass-card__player" id="pass-player">Spieler 1</p>
+        </div>
+        
+        <p class="warning">
+          <span class="warning__icon">⚠️</span>
+          <span id="pass-warning">Nicht hinschauen, wenn du nicht Spieler 1 bist!</span>
+        </p>
+        
+        <button class="btn btn--primary btn--glow" id="btn-ready">
+          Ich bin bereit 👀
+        </button>
+        
+        <p class="progress-info" id="pass-progress">Runde 1 • Spieler 1/6</p>
+      </div>
+    </section>
+
+    <!-- Screen 4: Role Reveal -->
+    <section id="screen-reveal" class="screen">
+      <div class="screen__content screen__content--center">
+        <div class="reveal-card" id="reveal-card">
+          <p class="reveal-card__label">Du bist:</p>
+          <p class="reveal-card__role" id="reveal-role">CREW</p>
+        </div>
+        
+        <p class="tap-hint">Tippe um fortzufahren</p>
+      </div>
+    </section>
+
+    <!-- Screen 5: Word Reveal -->
+    <section id="screen-word" class="screen">
+      <header class="screen__header">
+        <p class="screen__subtitle" id="word-header">Spieler 1 – Crew</p>
+      </header>
+      
+      <div class="screen__content screen__content--center">
+        <div class="word-card" id="word-card">
+          <p class="word-card__label">Das geheime Wort:</p>
+          <p class="word-card__word" id="secret-word">TANNENBAUM</p>
+        </div>
+        
+        <div class="timer-bar" id="timer-container">
+          <div class="timer-bar__fill" id="timer-fill"></div>
+        </div>
+        <p class="timer-text" id="timer-text">Versteckt sich in 5...</p>
+        
+        <div class="word-actions">
+          <button class="btn btn--secondary" id="btn-hide">Jetzt verstecken 👁️</button>
+          <button class="btn btn--primary" id="btn-next-player">Weitergeben →</button>
+        </div>
+      </div>
+      
+      <!-- Impostor Tip (hidden by default) -->
+      <div class="tip-box" id="impostor-tip" hidden>
+        <span class="tip-box__icon">💡</span>
+        <p class="tip-box__text"><strong>Tipp:</strong> Gib vage Hinweise und pass dich den anderen an.</p>
+      </div>
+    </section>
+
+    <!-- Screen 6: Diskussion -->
+    <section id="screen-discussion" class="screen">
+      <header class="screen__header">
+        <h2 class="screen__title">Diskussion</h2>
+      </header>
+      
+      <div class="screen__content">
+        <div class="card">
+          <div class="card__header">
+            <span class="card__icon">💬</span>
+            <h3 class="card__title">Jetzt diskutieren!</h3>
+          </div>
+          <p class="discussion-info">
+            Jeder Spieler gibt jetzt <strong>reihum einen Hinweis</strong> zum geheimen Wort – aber nur mündlich!<br><br>
+            ⚠️ Sagt <strong>nicht</strong> das Wort selbst!<br><br>
+            Diskutiert danach: <strong>Wer ist der Impostor?</strong>
+          </p>
+        </div>
+        
+        <div class="card">
+          <div class="card__header">
+            <span class="card__icon">⏱️</span>
+            <h3 class="card__title">Diskussions-Timer</h3>
+          </div>
+          <p class="timer-display" id="discussion-timer">02:00</p>
+          <button class="btn btn--secondary" id="btn-start-timer">Timer starten</button>
+        </div>
+        
+        <button class="btn btn--primary btn--glow" id="btn-to-vote">
+          Zur Abstimmung →
+        </button>
+      </div>
+    </section>
+
+    <!-- Screen 8: Vote Pass -->
+    <section id="screen-vote-pass" class="screen">
+      <div class="screen__content screen__content--center">
+        <div class="pass-card">
+          <span class="pass-card__icon">🗳️</span>
+          <p class="pass-card__label">Gib das Handy an:</p>
+          <p class="pass-card__player" id="vote-pass-player">Spieler 1</p>
+          <p class="pass-card__sub">Zeit abzustimmen!</p>
+        </div>
+        
+        <button class="btn btn--primary btn--glow" id="btn-vote-ready">
+          Ich bin bereit 🗳️
+        </button>
+        
+        <p class="progress-info" id="vote-progress">Abgestimmt: 0/6</p>
+      </div>
+    </section>
+
+    <!-- Screen 9: Voting -->
+    <section id="screen-vote" class="screen">
+      <header class="screen__header">
+        <h2 class="screen__title">Abstimmung</h2>
+        <p class="screen__subtitle">Wer ist der Impostor?</p>
+      </header>
+      
+      <div class="screen__content">
+        <p class="vote-info" id="vote-current-player">Spieler 1 stimmt ab:</p>
+        <div class="player-grid" id="player-grid"></div>
+        
+        <button class="btn btn--primary" id="btn-submit-vote" disabled>
+          Stimme abgeben ✓
+        </button>
+      </div>
+    </section>
+
+    <!-- Screen 10: Results -->
+    <section id="screen-results" class="screen">
+      <div class="screen__content screen__content--center">
+        <div class="result-card" id="result-votes">
+          <p class="result-card__label">Meiste Stimmen:</p>
+          <p class="result-card__player" id="result-voted-player">Spieler 5</p>
+          <p class="result-card__votes" id="result-vote-count">(4 Stimmen)</p>
+        </div>
+        
+        <div class="result-card result-card--reveal" id="result-impostor">
+          <p class="result-card__label">Der Impostor war...</p>
+          <p class="result-card__player result-card__player--impostor" id="result-impostor-player">🎭 Spieler 5 🎭</p>
+          <p class="result-card__verdict" id="result-verdict">✅ Richtig erkannt!</p>
+        </div>
+        
+        <div class="winner-banner" id="winner-banner">
+          <p class="winner-banner__text" id="winner-text">🎄 CREW GEWINNT! 🎄</p>
+        </div>
+        
+        <p class="word-reveal" id="word-reveal">Das Wort war: <strong id="final-word">TANNENBAUM</strong></p>
+        
+        <div class="end-actions">
+          <button class="btn btn--primary btn--glow" id="btn-play-again">Nochmal spielen 🔄</button>
+          <button class="btn btn--secondary" id="btn-new-round">Neue Runde (gleiche Spieler)</button>
+          <button class="btn btn--text" id="btn-home">Zum Start 🏠</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Rules Modal -->
+    <div class="modal" id="modal-rules" hidden>
+      <div class="modal__backdrop"></div>
+      <div class="modal__content">
+        <h2 class="modal__title">So funktioniert's</h2>
+        <ol class="rules-list">
+          <li>Handy wird reihum weitergegeben</li>
+          <li>Alle sehen ein geheimes Wort – außer dem Impostor!</li>
+          <li>Jeder gibt reihum einen Hinweis (mündlich!)</li>
+          <li>Diskutiert: Wer ist der Impostor?</li>
+          <li>Stimmt ab und findet den Betrüger!</li>
+        </ol>
+        <p class="rules-note">⚠️ Der Impostor muss so tun, als würde er das Wort kennen.</p>
+        <button class="btn btn--primary" id="btn-close-rules">Verstanden!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confetti Container -->
+  <div id="confetti" class="confetti" aria-hidden="true"></div>
+
+  <script src="words.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
