@@ -7,7 +7,7 @@ const WORD_LISTS = {
   weihnachten: [
     "Tannenbaum",
     "Schneemann",
-    "Geschenk",
+    "Geschenk", 
     "Christkind",
     "Lebkuchen",
     "Weihnachtsmarkt",
@@ -47,47 +47,37 @@ const WORD_LISTS = {
     "Vanillekipferl"
   ],
   
-  essen: [
-    "Pizza",
-    "Spaghetti",
-    "Hamburger",
-    "Pommes",
-    "Schokolade",
-    "Eis",
-    "Kuchen",
-    "Brot",
-    "Käse",
-    "Apfel",
-    "Banane",
-    "Salat",
-    "Suppe",
-    "Steak",
-    "Sushi",
-    "Nudeln",
-    "Reis",
-    "Kartoffel",
-    "Tomate",
-    "Gurke",
-    "Zwiebel",
-    "Ei",
-    "Butter",
-    "Honig",
-    "Marmelade",
-    "Müsli",
-    "Joghurt",
-    "Milch",
-    "Kaffee",
-    "Tee",
-    "Wasser",
-    "Saft",
-    "Brötchen",
-    "Croissant",
-    "Döner",
-    "Bratwurst",
-    "Schnitzel",
-    "Fisch",
-    "Garnele",
-    "Pilz"
+  noser: [
+    "Dani",
+    "Nico",
+    "zino",
+    "David",
+    "Edu",
+    "Lionel",
+    "Amina",
+    "Diego",
+    "Marina",
+    "Margarita",
+    "Noe",
+    "Kaylee",
+    "Filip G.",
+    "Filip K.",
+    "Dario",
+    "Julian",
+    "Samih",
+    "Kaylin",
+    "Milana",
+    "Tea",
+    "Franco",
+    "Sujan",
+    "Andrew",
+    "Phuc",
+    "Nadine",
+    "Laura",
+    "Damian",
+    "Marco",
+    "Julia",
+    "Levin"
   ],
   
   orte: [
@@ -177,7 +167,7 @@ const WORD_LISTS = {
   ]
 };
 
-// Get a random word from a category
+
 function getRandomWord(category) {
   if (category === 'random') {
     const categories = Object.keys(WORD_LISTS);

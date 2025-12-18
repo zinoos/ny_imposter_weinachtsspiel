@@ -2,7 +2,7 @@
 
 
 **Prompt:** <br>
-Exacter, geh auf das design ein, es soll ein weinachts theme haben und es wird eine web app sein
+Beschreibe das spiel imposter auf der handy app splash in prompt form
 
 **Result:**
 ```
@@ -113,3 +113,46 @@ Rahmen
 - Mobile-first, responsive bis Desktop.
 - Single-device Pass-and-Play.
 - Kein Code liefern, nur Design + UX Spezifikation. '''
+```
+
+---
+
+**Prompt:** <br>
+Entferne die Hinweis Runden, dies wird im echten Leben getan nicht auf der Website
+
+**Result:**
+- Entfernt: `screen-hint` HTML-Struktur (Hinweis-Eingabe Screen)
+- Ersetzt durch: `screen-discussion` (einfacher Diskussions-Screen mit Timer)
+- Aktualisiert: "Wie funktioniert's"-Labels ("Hinweise" → "Diskutieren")
+- Aktualisiert: Regeln-Modal Text (Hinweise sind jetzt "mündlich!")
+- JavaScript: `showHintInput()`, `showHintPassScreen()`, `updateHintCounter()`, `submitHint()` entfernt
+- JavaScript: `nextPlayer()` leitet jetzt direkt zu `showDiscussion()`
+
+---
+
+**Prompt:** <br>
+Entferne den Optionen Tab vom Einstellungen Tab
+
+**Result:**
+- Entfernt: "Optionen" Card aus `index.html` (Kinderfreundlich + Motion reduzieren Toggles)
+- Entfernt: `toggleOption()` Funktion aus `game.js`
+- Entfernt: Event Listener für `#toggle-family` und `#toggle-motion`
+- Beibehalten: Automatische `prefers-reduced-motion` Browser-Erkennung (ohne manuellen Toggle)
+
+---
+
+**Prompt:** <br>
+Entferne das Voting System, das wird auch in Real Life getan. Es soll nur noch der Aufdeck-Knopf sein. Mache auch eine Option, dass man Namen setzen kann für jeden Spieler.
+
+**Result:**
+- Entfernt: `screen-vote-pass` und `screen-vote` HTML-Screens
+- Entfernt: Voting-Funktionen (`startVoting`, `showVotePassScreen`, `showVoteScreen`, `selectVote`, `submitVote`)
+- Vereinfacht: Results-Screen zeigt nur noch Impostor-Reveal und Wort (keine Vote-Ergebnisse)
+- Geändert: "Zur Abstimmung" Button → "Impostor aufdecken 🎭" (`#btn-reveal-impostor`)
+- Geändert: How-to Icons ("Abstimmen" → "Aufdecken")
+- Hinzugefügt: Spielernamen-Eingabe im Setup
+  - Toggle "Namen eingeben" im Spieler-Card
+  - Eingabefelder für jeden Spieler (max 20 Zeichen)
+  - `playerNames` Array im GameState
+  - `getPlayerName()` Hilfsfunktion für überall wo Spielernamen angezeigt werden
+  - CSS-Styles für `.player-names`, `.player-name-input`

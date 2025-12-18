@@ -551,6 +551,10 @@ body.reduce-motion .btn--glow {
   border-bottom: none;
 }
 
+.toggle-row--spaced {
+  margin-top: var(--space-4);
+}
+
 .toggle-label {
   font-size: 1rem;
   color: var(--color-snow-200);
@@ -584,6 +588,56 @@ body.reduce-motion .btn--glow {
 
 .toggle[aria-pressed="true"] .toggle__knob {
   transform: translateX(24px);
+}
+
+/* ----------------------------------------
+   Player Names Input
+   ---------------------------------------- */
+.player-names {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.player-names__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.player-name-input {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.player-name-input__label {
+  width: 24px;
+  font-size: 0.875rem;
+  color: var(--color-snow-400);
+  text-align: right;
+}
+
+.player-name-input__field {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-night-700);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  color: var(--color-snow-100);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.player-name-input__field:focus {
+  outline: none;
+  border-color: var(--color-pine-400);
+  box-shadow: 0 0 0 3px rgba(74, 168, 114, 0.2);
+}
+
+.player-name-input__field::placeholder {
+  color: var(--color-snow-600);
 }
 
 /* ----------------------------------------

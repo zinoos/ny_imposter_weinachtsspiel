@@ -14,12 +14,13 @@ const GameState = {
   familyFriendly: true,
   reduceMotion: false,
   soundEnabled: true,
+  useCustomNames: false,
+  playerNames: [], // Custom player names
   
   // Game Data
   secretWord: '',
   impostors: [], // Array of player indices (0-based)
   hints: [], // Array of { player: number, hint: string }
-  votes: [], // Array of { voter: number, target: number }
   
   // Current Progress
   currentPhase: 'landing', // landing, setup, reveal, hints, overview, voting, results
@@ -29,19 +30,16 @@ const GameState = {
   timerSeconds: 5,
   discussionSeconds: 120,
   discussionRunning: false,
-  selectedVote: null,
   
   // Reset game data for new round
   resetRound() {
     this.secretWord = '';
     this.impostors = [];
     this.hints = [];
-    this.votes = [];
     this.currentPlayer = 0;
     this.revealStep = 'role';
     this.wordHidden = false;
     this.timerSeconds = 5;
-    this.selectedVote = null;
   },
   
   // Full reset
@@ -65,8 +63,6 @@ const screens = {
   reveal: $('#screen-reveal'),
   word: $('#screen-word'),
   discussion: $('#screen-discussion'),
-  votePass: $('#screen-vote-pass'),
-  vote: $('#screen-vote'),
   results: $('#screen-results')
 };
 
@@ -152,6 +148,11 @@ function updatePlayerCount(delta) {
     
     // Update impostor recommendation
     updateImpostorRecommendation();
+    
+    // Update player name inputs if visible
+    if (GameState.useCustomNames) {
+      updatePlayerNameInputs();
+    }
   }
 }
 
@@ -186,6 +187,67 @@ function updateImpostorRecommendation() {
   $('#impostor-plus').disabled = GameState.impostorCount >= maxImpostors;
 }
 
+// ========================================
+// Player Names
+// ========================================
+function togglePlayerNames() {
+  const toggle = $('#toggle-names');
+  const isPressed = toggle.getAttribute('aria-pressed') === 'true';
+  toggle.setAttribute('aria-pressed', !isPressed);
+  
+  GameState.useCustomNames = !isPressed;
+  
+  const container = $('#player-names-container');
+  container.hidden = isPressed;
+  
+  if (!isPressed) {
+    updatePlayerNameInputs();
+  }
+}
+
+function updatePlayerNameInputs() {
+  const list = $('#player-names-list');
+  list.innerHTML = '';
+  
+  // Initialize playerNames array if needed
+  if (GameState.playerNames.length !== GameState.playerCount) {
+    GameState.playerNames = Array(GameState.playerCount).fill('').map((_, i) => `Spieler ${i + 1}`);
+  }
+  
+  for (let i = 0; i < GameState.playerCount; i++) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'player-name-input';
+    
+    const label = document.createElement('span');
+    label.className = 'player-name-input__label';
+    label.textContent = `${i + 1}.`;
+    
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'player-name-input__field';
+    input.placeholder = `Spieler ${i + 1}`;
+    input.value = GameState.playerNames[i] === `Spieler ${i + 1}` ? '' : GameState.playerNames[i];
+    input.maxLength = 20;
+    input.dataset.index = i;
+    
+    input.addEventListener('input', (e) => {
+      const idx = parseInt(e.target.dataset.index);
+      GameState.playerNames[idx] = e.target.value.trim() || `Spieler ${idx + 1}`;
+    });
+    
+    wrapper.appendChild(label);
+    wrapper.appendChild(input);
+    list.appendChild(wrapper);
+  }
+}
+
+function getPlayerName(index) {
+  if (GameState.useCustomNames && GameState.playerNames[index]) {
+    return GameState.playerNames[index];
+  }
+  return `Spieler ${index + 1}`;
+}
+
 function selectCategory(category) {
   GameState.category = category;
   
@@ -193,20 +255,6 @@ function selectCategory(category) {
   $$('.chip').forEach(chip => {
     chip.classList.toggle('chip--active', chip.dataset.category === category);
   });
-}
-
-function toggleOption(toggleId) {
-  const toggle = $(`#${toggleId}`);
-  const isPressed = toggle.getAttribute('aria-pressed') === 'true';
-  toggle.setAttribute('aria-pressed', !isPressed);
-  
-  // Update state
-  if (toggleId === 'toggle-family') {
-    GameState.familyFriendly = !isPressed;
-  } else if (toggleId === 'toggle-motion') {
-    GameState.reduceMotion = !isPressed;
-    document.body.classList.toggle('reduce-motion', !isPressed);
-  }
 }
 
 // ========================================
@@ -237,10 +285,10 @@ function startGame() {
 // Pass Screen (Handover)
 // ========================================
 function showPassScreen() {
-  const playerNum = GameState.currentPlayer + 1;
-  $('#pass-player').textContent = `Spieler ${playerNum}`;
-  $('#pass-warning').textContent = `Nicht hinschauen, wenn du nicht Spieler ${playerNum} bist!`;
-  $('#pass-progress').textContent = `Spieler ${playerNum}/${GameState.playerCount}`;
+  const playerName = getPlayerName(GameState.currentPlayer);
+  $('#pass-player').textContent = playerName;
+  $('#pass-warning').textContent = `Nicht hinschauen, wenn du nicht ${playerName} bist!`;
+  $('#pass-progress').textContent = `Spieler ${GameState.currentPlayer + 1}/${GameState.playerCount}`;
   
   showScreen('pass');
 }
@@ -271,7 +319,7 @@ function showRoleReveal() {
 // Word Reveal
 // ========================================
 function showWordReveal() {
-  const playerNum = GameState.currentPlayer + 1;
+  const playerName = getPlayerName(GameState.currentPlayer);
   const isImpostor = GameState.impostors.includes(GameState.currentPlayer);
   const wordCard = $('#word-card');
   const secretWordEl = $('#secret-word');
@@ -281,7 +329,7 @@ function showWordReveal() {
   const hideBtn = $('#btn-hide');
   
   // Update header
-  $('#word-header').textContent = `Spieler ${playerNum} – ${isImpostor ? 'Impostor 🎭' : 'Crew'}`;
+  $('#word-header').textContent = `${playerName} – ${isImpostor ? 'Impostor 🎭' : 'Crew'}`;
   $('#word-header').style.color = isImpostor ? 'var(--color-candy-500)' : 'var(--color-pine-400)';
   
   // Reset state
@@ -425,171 +473,33 @@ function toggleDiscussionTimer() {
 }
 
 // ========================================
-// Voting Phase
+// Reveal Impostor (replaces voting)
 // ========================================
-function startVoting() {
+function revealImpostor() {
   // Clean up discussion timer
   if (GameState.discussionTimerInterval) {
     clearInterval(GameState.discussionTimerInterval);
   }
   
-  GameState.currentPlayer = 0;
-  GameState.votes = [];
-  showVotePassScreen();
-}
-
-function showVotePassScreen() {
-  const playerNum = GameState.currentPlayer + 1;
-  $('#vote-pass-player').textContent = `Spieler ${playerNum}`;
-  $('#vote-progress').textContent = `Abgestimmt: ${GameState.votes.length}/${GameState.playerCount}`;
-  
-  showScreen('votePass');
-}
-
-function showVoteScreen() {
-  const voterNum = GameState.currentPlayer + 1;
-  $('#vote-current-player').textContent = `Spieler ${voterNum} stimmt ab:`;
-  
-  // Create player grid
-  const grid = $('#player-grid');
-  grid.innerHTML = '';
-  
-  for (let i = 0; i < GameState.playerCount; i++) {
-    const card = document.createElement('div');
-    card.className = 'player-card';
-    card.dataset.player = i;
-    
-    // Can't vote for yourself
-    if (i === GameState.currentPlayer) {
-      card.classList.add('player-card--disabled');
-    }
-    
-    card.innerHTML = `
-      <span class="player-card__icon">👤</span>
-      <span class="player-card__name">Spieler ${i + 1}</span>
-      <span class="player-card__check">✓</span>
-    `;
-    
-    if (i !== GameState.currentPlayer) {
-      card.addEventListener('click', () => selectVote(i));
-    }
-    
-    grid.appendChild(card);
-  }
-  
-  GameState.selectedVote = null;
-  $('#btn-submit-vote').disabled = true;
-  
-  showScreen('vote');
-}
-
-function selectVote(playerIndex) {
-  GameState.selectedVote = playerIndex;
-  
-  // Update UI
-  $$('.player-card').forEach((card, i) => {
-    card.classList.toggle('player-card--selected', i === playerIndex);
-  });
-  
-  $('#btn-submit-vote').disabled = false;
-}
-
-function submitVote() {
-  if (GameState.selectedVote === null) return;
-  
-  GameState.votes.push({
-    voter: GameState.currentPlayer,
-    target: GameState.selectedVote
-  });
-  
-  GameState.currentPlayer++;
-  
-  if (GameState.currentPlayer >= GameState.playerCount) {
-    // All votes collected, show results
-    showResults();
-  } else {
-    showVotePassScreen();
-  }
+  showResults();
 }
 
 // ========================================
 // Results Screen
 // ========================================
 function showResults() {
-  // Count votes
-  const voteCounts = {};
-  GameState.votes.forEach(v => {
-    voteCounts[v.target] = (voteCounts[v.target] || 0) + 1;
-  });
-  
-  // Find player with most votes
-  let maxVotes = 0;
-  let votedPlayer = -1;
-  
-  Object.entries(voteCounts).forEach(([player, count]) => {
-    if (count > maxVotes) {
-      maxVotes = count;
-      votedPlayer = parseInt(player);
-    }
-  });
-  
-  // Check for tie
-  const playersWithMaxVotes = Object.entries(voteCounts)
-    .filter(([_, count]) => count === maxVotes)
-    .map(([player, _]) => parseInt(player));
-  
-  const isTie = playersWithMaxVotes.length > 1;
-  
-  // Update results UI
-  if (isTie) {
-    $('#result-voted-player').textContent = 'Gleichstand!';
-    $('#result-vote-count').textContent = 'Niemand fliegt raus';
-  } else {
-    $('#result-voted-player').textContent = `Spieler ${votedPlayer + 1}`;
-    $('#result-vote-count').textContent = `(${maxVotes} Stimmen)`;
-  }
-  
-  // Determine winner
-  const impostorCaught = !isTie && GameState.impostors.includes(votedPlayer);
-  
-  // Update impostor reveal
+  // Update impostor reveal with names
   const impostorNames = GameState.impostors
-    .map(i => `Spieler ${i + 1}`)
+    .map(i => getPlayerName(i))
     .join(' & ');
   
   $('#result-impostor-player').textContent = `🎭 ${impostorNames} 🎭`;
   
-  // Update verdict
-  const verdict = $('#result-verdict');
-  if (isTie) {
-    verdict.textContent = '❌ Keiner entlarvt!';
-    verdict.className = 'result-card__verdict result-card__verdict--wrong';
-  } else if (impostorCaught) {
-    verdict.textContent = '✅ Richtig erkannt!';
-    verdict.className = 'result-card__verdict result-card__verdict--correct';
-  } else {
-    verdict.textContent = '❌ Falsch getippt!';
-    verdict.className = 'result-card__verdict result-card__verdict--wrong';
-  }
-  
-  // Update winner banner
-  const winnerBanner = $('#winner-banner');
-  const winnerText = $('#winner-text');
-  
-  winnerBanner.classList.remove('winner-banner--crew', 'winner-banner--impostor');
-  
-  if (impostorCaught) {
-    winnerBanner.classList.add('winner-banner--crew');
-    winnerText.textContent = '🎄 CREW GEWINNT! 🎄';
-    // Show confetti for crew win
-    setTimeout(showConfetti, 1200);
-  } else {
-    winnerBanner.classList.add('winner-banner--impostor');
-    winnerText.textContent = '🎭 IMPOSTOR ENTKOMMT! 🎭';
-  }
-  
   // Show word
   $('#final-word').textContent = GameState.secretWord;
+  
+  // Show confetti
+  setTimeout(showConfetti, 800);
   
   showScreen('results');
 }
@@ -634,10 +544,6 @@ function initEventListeners() {
     chip.addEventListener('click', () => selectCategory(chip.dataset.category));
   });
   
-  // Toggles
-  $('#toggle-family').addEventListener('click', () => toggleOption('toggle-family'));
-  $('#toggle-motion').addEventListener('click', () => toggleOption('toggle-motion'));
-  
   // Start game
   $('#btn-play').addEventListener('click', startGame);
   
@@ -658,13 +564,10 @@ function initEventListeners() {
   
   // Discussion
   $('#btn-start-timer').addEventListener('click', toggleDiscussionTimer);
-  $('#btn-to-vote').addEventListener('click', startVoting);
+  $('#btn-reveal-impostor').addEventListener('click', revealImpostor);
   
-  // Vote pass
-  $('#btn-vote-ready').addEventListener('click', showVoteScreen);
-  
-  // Vote
-  $('#btn-submit-vote').addEventListener('click', submitVote);
+  // Player names toggle
+  $('#toggle-names').addEventListener('click', togglePlayerNames);
   
   // Results
   $('#btn-play-again').addEventListener('click', () => {
@@ -688,7 +591,6 @@ function initEventListeners() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     GameState.reduceMotion = true;
     document.body.classList.add('reduce-motion');
-    $('#toggle-motion').setAttribute('aria-pressed', 'true');
   }
 }
 
